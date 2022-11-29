@@ -13,34 +13,36 @@
         TextOptions.TextRenderingMode="Auto"        
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="abasWSL" Height="265" Width="341" Icon="penguinIcon.png" WindowStyle="ThreeDBorderWindow" >
-    
+        Title="abasWSL" Height="300" Width="341" Icon="penguinIcon.png" WindowStyle="ThreeDBorderWindow" >
+
     <Grid>
 
-        
+
         <StackPanel>
-            <TabControl x:Name="tabControl" Height="254">
+            <TabControl x:Name="tabControl" Height="270">
                 <TabItem Header="Work">
-                    <Grid Background="#FFE5E5E5">
+                    <Grid Background="#FFE5E5E5" Margin="0,0,0,-26">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="250"/>
+                           
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="startbtn" Content="Start abas" Margin="87,29,87,37" Cursor="Hand" Click="OnClick_togglewsl"  Style="{DynamicResource MaterialDesignFloatingActionButton}" Height="140" Width="140" FontSize="25"/>
+                        <Button x:Name="startbtn" Content="Start abas" Margin="87,35,5,46" Cursor="Hand" Click="OnClick_togglewsl"  Style="{DynamicResource MaterialDesignFloatingActionButton}" Height="140" Width="140" FontSize="25" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Install">
-                    <Grid Background="#FFE5E5E5">
+                    <Grid Background="#FFE5E5E5" Margin="0,0,0,-29">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="49*"/>
                             <ColumnDefinition Width="144*"/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="importbtn" Content="Install the VM"  materialDesign:ButtonAssist.CornerRadius="25" HorizontalAlignment="Left" Margin="10,135,0,0" VerticalAlignment="Top" Click="OnClick_Install" Grid.ColumnSpan="2" Width="304"/>
+                        <Button x:Name="importbtn" Content="Install the VM"  materialDesign:ButtonAssist.CornerRadius="25" HorizontalAlignment="Left" Margin="10,112,0,0" VerticalAlignment="Top" Click="OnClick_Install" Grid.ColumnSpan="2" Width="304"/>
                         <Button x:Name="targetbtn" Content="Choose Target Directory"  materialDesign:ButtonAssist.CornerRadius="25" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="OnClicktargetbtn" Grid.ColumnSpan="2" Width="304"/>
-                        <Button x:Name="sourcebtn" Content="Choose Tar Image"  materialDesign:ButtonAssist.CornerRadius="25" HorizontalAlignment="Left" Margin="10,71,0,0" VerticalAlignment="Top" Click="OnClicksourcebtn" Grid.ColumnSpan="2" Width="304"/>
+                        <Button x:Name="sourcebtn" Content="Choose Tar Image"  materialDesign:ButtonAssist.CornerRadius="25" HorizontalAlignment="Left" Margin="10,60,0,0" VerticalAlignment="Top" Click="OnClicksourcebtn" Grid.ColumnSpan="2" Width="304"/>
+                        <Button x:Name="uninstallbtn" Content="Uninstall the VM"  materialDesign:ButtonAssist.CornerRadius="25" HorizontalAlignment="Left" Margin="10,164,0,0" VerticalAlignment="Top" Click="OnClick_Uninstall" Grid.ColumnSpan="2" Width="304"/>
                     </Grid>
                 </TabItem>
             </TabControl>
         </StackPanel>
     </Grid>
-    
+
 </Window>

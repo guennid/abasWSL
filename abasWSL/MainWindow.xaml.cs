@@ -45,6 +45,7 @@ namespace abasWSL
                     importbtn.IsEnabled = false;
                     targetbtn.IsEnabled = false;
                     sourcebtn.IsEnabled = false;
+                    uninstallbtn.IsEnabled = true;
                     
 
                 }
@@ -56,6 +57,7 @@ namespace abasWSL
                     importbtn.IsEnabled = false;
                     targetbtn.IsEnabled = false;
                     sourcebtn.IsEnabled = false;
+                    uninstallbtn.IsEnabled = true;
 
                 }
                 if (output.Contains("Installing"))
@@ -66,6 +68,7 @@ namespace abasWSL
                     importbtn.IsEnabled = false;
                     targetbtn.IsEnabled = false;
                     sourcebtn.IsEnabled = false;
+                    uninstallbtn.IsEnabled = false;
 
                 }
 
@@ -78,6 +81,8 @@ namespace abasWSL
                 importbtn.IsEnabled = true;
                 targetbtn.IsEnabled= true;
                 sourcebtn.IsEnabled= true;
+                uninstallbtn.IsEnabled= false;
+
 
             }
         }
@@ -122,6 +127,7 @@ namespace abasWSL
                 targetbtn.Content = SelectedFolderPath;
             }
 
+
         }
         async void OnClick_Install(object sender, RoutedEventArgs e)
         {
@@ -129,19 +135,46 @@ namespace abasWSL
             importbtn.IsEnabled = false;
             targetbtn.IsEnabled = false;
             sourcebtn.IsEnabled = false;
+            uninstallbtn.IsEnabled = false;
             object args= new object[2] {targetbtn.Content, sourcebtn.Content};
             Dispatcher.Invoke(new Action(() => { }), DispatcherPriority.ContextIdle);
             //inststatus.Refresh();
             //installwslAsync("--import erp " + targetdir.Text + " " + tardir.Text + " --version 1", 0);
             
-            await callwsl2("--import erp " + targetbtn.Content + " " + sourcebtn.Content + " --version 1", 0);
+            await callwsl2("--import erp \"" + targetbtn.Content + "\"  \"" + sourcebtn.Content + "\" --version 1", 0);
 
             importbtn.Content= "Install ready !!!";
             startbtn.IsEnabled = true;
             startbtn.Content = "Start abas";
 
         }
-        
+        async void OnClick_Uninstall(object sender, RoutedEventArgs e)
+        {
+            uninstallbtn.Content = "Uninstalling...";
+            uninstallbtn.IsEnabled = false;
+            startbtn.IsEnabled = false;
+            importbtn.IsEnabled = false;
+            targetbtn.IsEnabled = false;
+            sourcebtn.IsEnabled = false;
+            object args = new object[2] { targetbtn.Content, sourcebtn.Content };
+            Dispatcher.Invoke(new Action(() => { }), DispatcherPriority.ContextIdle);
+            //inststatus.Refresh();
+            //installwslAsync("--import erp " + targetdir.Text + " " + tardir.Text + " --version 1", 0);
+
+            await callwsl2("--unregister erp", 0);
+
+            importbtn.Content = "Uninstalled!!!";
+            
+            startbtn.Content = "Not installed";
+            //inststatus.Text = "Not installed";
+            importbtn.Content = "Install the VM";
+            startbtn.IsEnabled = false;
+            importbtn.IsEnabled = true;
+            targetbtn.IsEnabled = true;
+            sourcebtn.IsEnabled = true;
+
+        }
+
         public async void installwslAsync(string command, int v)
         {
                         Task x = callwsl2(command, v);
