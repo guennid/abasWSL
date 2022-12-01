@@ -23,10 +23,13 @@
                 <TabItem Header="Work">
                     <Grid Background="#FFE5E5E5" Margin="0,0,0,-26">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="250"/>
-                           
+                            <ColumnDefinition Width="341"/>
+
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="startbtn" Content="Start abas" Margin="87,35,5,46" Cursor="Hand" Click="OnClick_togglewsl"  Style="{DynamicResource MaterialDesignFloatingActionButton}" Height="140" Width="140" FontSize="25" Grid.ColumnSpan="2"/>
+                        <ComboBox x:Name="imagecombo"
+                            materialDesign:HintAssist.Hint="Image" Margin="22,10,59,0" VerticalAlignment="Top">
+                        </ComboBox>
+                        <Button x:Name="startbtn" Content="Start abas" Margin="100,54,101,54" Cursor="Hand" Click="OnClick_togglewsl"  Style="{DynamicResource MaterialDesignFloatingActionButton}" Height="140" Width="140" FontSize="25"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Install">

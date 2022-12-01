@@ -30,7 +30,11 @@ namespace abasWSL
         {
             
             InitializeComponent();
-            String output = callwsl("--list --verbose", 1000);
+           Readwsl();
+
+
+            /*
+
             int i = output.IndexOf("erp");
             if (i > 0)
             {
@@ -84,9 +88,48 @@ namespace abasWSL
                 uninstallbtn.IsEnabled= false;
 
 
+            }*/
+        }
+       void Readwsl()
+        {
+            String output = callwsl("--list --verbose", 1000);
+            //1. zeile weg
+            int lineend = output.IndexOf("\n");
+            output = output.Substring(lineend + 1);
+            imagecombo.Items.Clear();
+            while (output.Contains("\n"))
+            {
+                lineend = output.IndexOf("\n");
+                string line = output.Substring(0, lineend);
+                string imagename = line.Substring(2, line.Length - 2);
+                imagename = imagename.Substring(0, imagename.IndexOf(" "));
+                imagecombo.Items.Add(imagename);
+                if (imagecombo.Items.Count == 1)
+                {
+                    if (line.Contains("Stopped"))
+                    {
+                        startbtn.Content = "Start Image"; ;
+                        startbtn.IsEnabled = true;
+                    }
+                    if (line.Contains("Running"))
+                    {
+                        startbtn.Content = "Stop Image"; ;
+                        startbtn.IsEnabled = true;
+                    }
+                    if (line.Contains("Installing"))
+                    {
+                        startbtn.Content = "Installing"; ;
+                        startbtn.IsEnabled = true;
+                    }
+                }
+                lineend = output.IndexOf("\n");
+                output = output.Substring(lineend + 1);
+            }
+            if (imagecombo.Items != null)
+            {
+                imagecombo.SelectedIndex = 0;
             }
         }
-       
         void OnClicksourcebtn(object sender, RoutedEventArgs e)
         {
 
@@ -140,12 +183,15 @@ namespace abasWSL
             Dispatcher.Invoke(new Action(() => { }), DispatcherPriority.ContextIdle);
             //inststatus.Refresh();
             //installwslAsync("--import erp " + targetdir.Text + " " + tardir.Text + " --version 1", 0);
-            
-            await callwsl2("--import erp \"" + targetbtn.Content + "\"  \"" + sourcebtn.Content + "\" --version 1", 0);
+            string image = sourcebtn.Content.ToString();
+            int backslash = image.LastIndexOf("\\")+1;
+            image = image.Substring(backslash, image.Length - backslash);
+            image =image.Substring(0,image.IndexOf("."));
+            await callwsl2("--import "+image+ " " + targetbtn.Content + "  " + sourcebtn.Content + " --version 1", 0);
 
             importbtn.Content= "Install ready !!!";
-            startbtn.IsEnabled = true;
-            startbtn.Content = "Start abas";
+            //startbtn.Content = "Start abas";
+            Readwsl();
 
         }
         async void OnClick_Uninstall(object sender, RoutedEventArgs e)
@@ -161,17 +207,12 @@ namespace abasWSL
             //inststatus.Refresh();
             //installwslAsync("--import erp " + targetdir.Text + " " + tardir.Text + " --version 1", 0);
 
-            await callwsl2("--unregister erp", 0);
+            await callwsl2("--unregister "+imagecombo.SelectedValue.ToString(), 0);
 
-            importbtn.Content = "Uninstalled!!!";
+            uninstallbtn.Content = "Uninstalled!!!";
             
-            startbtn.Content = "Not installed";
-            //inststatus.Text = "Not installed";
-            importbtn.Content = "Install the VM";
-            startbtn.IsEnabled = false;
-            importbtn.IsEnabled = true;
-            targetbtn.IsEnabled = true;
-            sourcebtn.IsEnabled = true;
+            
+            Readwsl();
 
         }
 
@@ -184,21 +225,21 @@ namespace abasWSL
         void OnClick_togglewsl(object sender, RoutedEventArgs e)
         {
             String output= callwsl("--list --verbose",0);
-            int i = output.IndexOf("erp");
+            int i = output.IndexOf(imagecombo.SelectedValue.ToString());   
             output = output.Substring(i, output.Length - i);
             i = output.IndexOf("1");
             output = output.Substring(0, i);
             if (output.Contains("Stopped"))
             {//Wsl aktuell gestoppt, kann gestartet werden 
-                callwsl("-d erp -u root sh /abas/bin/starteVersion.sh run",5000);
+                callwsl("-d " +imagecombo.SelectedValue.ToString()+ " -u root sh /abas/bin/starteVersion.sh run",5000);
             }
             else
             {
-                callwsl("--terminate erp",0);
+                callwsl("--terminate "+imagecombo.SelectedValue.ToString(),0);
             }
             // Status abholen
            output = callwsl("--list --verbose", 0);
-            i = output.IndexOf("erp");
+            i = output.IndexOf(imagecombo.SelectedValue.ToString());
             output = output.Substring(i, output.Length - i);
             i = output.IndexOf("1");
             output = output.Substring(0, i);
