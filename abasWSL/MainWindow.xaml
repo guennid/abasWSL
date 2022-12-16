@@ -27,7 +27,7 @@
 
                         </Grid.ColumnDefinitions>
                         <ComboBox x:Name="imagecombo"
-                            materialDesign:HintAssist.Hint="Image" Margin="22,10,59,0" VerticalAlignment="Top">
+                            materialDesign:HintAssist.Hint="Image" Margin="22,10,59,0" VerticalAlignment="Top" SelectionChanged="OnSelectionChanged_imagecombo">
                         </ComboBox>
                         <Button x:Name="startbtn" Content="Start abas" Margin="100,54,101,54" Cursor="Hand" Click="OnClick_togglewsl"  Style="{DynamicResource MaterialDesignFloatingActionButton}" Height="140" Width="140" FontSize="25"/>
                     </Grid>
@@ -38,7 +38,7 @@
                             <ColumnDefinition Width="49*"/>
                             <ColumnDefinition Width="144*"/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="importbtn" Content="Install the VM"  materialDesign:ButtonAssist.CornerRadius="25" HorizontalAlignment="Left" Margin="10,112,0,0" VerticalAlignment="Top" Click="OnClick_Install" Grid.ColumnSpan="2" Width="304"/>
+                        <Button x:Name="importbtn" Content="Install new VM"  materialDesign:ButtonAssist.CornerRadius="25" HorizontalAlignment="Left" Margin="10,112,0,0" VerticalAlignment="Top" Click="OnClick_Install" Grid.ColumnSpan="2" Width="304"/>
                         <Button x:Name="targetbtn" Content="Choose Target Directory"  materialDesign:ButtonAssist.CornerRadius="25" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="OnClicktargetbtn" Grid.ColumnSpan="2" Width="304"/>
                         <Button x:Name="sourcebtn" Content="Choose Tar Image"  materialDesign:ButtonAssist.CornerRadius="25" HorizontalAlignment="Left" Margin="10,60,0,0" VerticalAlignment="Top" Click="OnClicksourcebtn" Grid.ColumnSpan="2" Width="304"/>
                         <Button x:Name="uninstallbtn" Content="Uninstall the VM"  materialDesign:ButtonAssist.CornerRadius="25" HorizontalAlignment="Left" Margin="10,164,0,0" VerticalAlignment="Top" Click="OnClick_Uninstall" Grid.ColumnSpan="2" Width="304"/>

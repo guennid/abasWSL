@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
+using System.Windows.Media.Imaging;
+
 
 namespace abasWSL
 {
@@ -30,65 +32,13 @@ namespace abasWSL
         {
             
             InitializeComponent();
-           Readwsl();
+            
+            Readwsl();
+            importbtn.IsEnabled= false;
+            sourcebtn.IsEnabled = false;
 
 
-            /*
-
-            int i = output.IndexOf("erp");
-            if (i > 0)
-            {
-                output = output.Substring(i, output.Length - i);
-                i = output.IndexOf("1");
-                output = output.Substring(0, i);
-                if (output.Contains("Stopped"))
-                {
-                    startbtn.Content = "Start abas";
-                    //inststatus.Text = "Installed";
-                    startbtn.IsEnabled = true;
-                    importbtn.IsEnabled = false;
-                    targetbtn.IsEnabled = false;
-                    sourcebtn.IsEnabled = false;
-                    uninstallbtn.IsEnabled = true;
-                    
-
-                }
-                if (output.Contains("Running"))
-                {
-                    startbtn.Content= "Stop abas";
-                    //inststatus.Text = "Installed";
-                    startbtn.IsEnabled = true;
-                    importbtn.IsEnabled = false;
-                    targetbtn.IsEnabled = false;
-                    sourcebtn.IsEnabled = false;
-                    uninstallbtn.IsEnabled = true;
-
-                }
-                if (output.Contains("Installing"))
-                {
-                    startbtn.Content = "Installing";
-                    importbtn.Content = "Installing";
-                    startbtn.IsEnabled = false;
-                    importbtn.IsEnabled = false;
-                    targetbtn.IsEnabled = false;
-                    sourcebtn.IsEnabled = false;
-                    uninstallbtn.IsEnabled = false;
-
-                }
-
-            }
-            else
-            {
-                startbtn.Content = "Not installed";
-                //inststatus.Text = "Not installed";
-                startbtn.IsEnabled = false;
-                importbtn.IsEnabled = true;
-                targetbtn.IsEnabled= true;
-                sourcebtn.IsEnabled= true;
-                uninstallbtn.IsEnabled= false;
-
-
-            }*/
+           
         }
        void Readwsl()
         {
@@ -150,8 +100,10 @@ namespace abasWSL
             { 
                 string SelectedFolderPath = fileSelectorDialog.FileName;
                 sourcebtn.Content = SelectedFolderPath;
-                
+                importbtn.IsEnabled = true;
+                importbtn.Content = "Install image";
             }
+            
         }
             void OnClicktargetbtn(object sender, RoutedEventArgs e)
         {
@@ -168,12 +120,55 @@ namespace abasWSL
             {
                 string SelectedFolderPath = folderSelectorDialog.FileName;
                 targetbtn.Content = SelectedFolderPath;
+                sourcebtn.IsEnabled = true;
             }
 
 
         }
+        void OnSelectionChanged_imagecombo(object sender, RoutedEventArgs e)
+        {
+            if (imagecombo.Items !=null && imagecombo.SelectedValue!=null)
+            {
+                uninstallbtn.Content = "Uninstall " + imagecombo.SelectedValue.ToString();   
+            String output = callwsl("--list --verbose", 1000);
+            //1. zeile weg
+            int lineend = output.IndexOf("\n");
+            output = output.Substring(lineend + 1);
+            
+            while (output.Contains("\n"))
+            {
+                lineend = output.IndexOf("\n");
+                string line = output.Substring(0, lineend);
+                string imagename = line.Substring(2, line.Length - 2);
+                imagename = imagename.Substring(0, imagename.IndexOf(" "));
+                if (imagecombo.SelectedValue.ToString()==imagename)
+                { 
+                  if (line.Contains("Stopped"))
+                    {
+                        startbtn.Content = "Start Image"; ;
+                        startbtn.IsEnabled = true;
+                    }
+                    if (line.Contains("Running"))
+                    {
+                        startbtn.Content = "Stop Image"; ;
+                        startbtn.IsEnabled = true;
+                    }
+                    if (line.Contains("Installing"))
+                    {
+                        startbtn.Content = "Installing"; ;
+                        startbtn.IsEnabled = true;
+                    }
+                }
+                lineend = output.IndexOf("\n");
+                output = output.Substring(lineend + 1);
+            }
+            uninstallbtn.IsEnabled= true;
+            }
+
+        }
         async void OnClick_Install(object sender, RoutedEventArgs e)
         {
+            string imagestr;
             importbtn.Content = "Installing...";
             importbtn.IsEnabled = false;
             targetbtn.IsEnabled = false;
@@ -183,15 +178,22 @@ namespace abasWSL
             Dispatcher.Invoke(new Action(() => { }), DispatcherPriority.ContextIdle);
             //inststatus.Refresh();
             //installwslAsync("--import erp " + targetdir.Text + " " + tardir.Text + " --version 1", 0);
-            string image = sourcebtn.Content.ToString();
-            int backslash = image.LastIndexOf("\\")+1;
-            image = image.Substring(backslash, image.Length - backslash);
-            image =image.Substring(0,image.IndexOf("."));
-            await callwsl2("--import "+image+ " " + targetbtn.Content + "  " + sourcebtn.Content + " --version 1", 0);
+            imagestr = sourcebtn.Content.ToString();
+            int backslash = imagestr.LastIndexOf("\\")+1;
+            imagestr = imagestr.Substring(backslash, imagestr.Length - backslash);
+            imagestr =imagestr.Substring(0,imagestr.IndexOf("."));
+            await callwsl2("--import "+imagestr + " " + targetbtn.Content + "  " + sourcebtn.Content , 0);
 
             importbtn.Content= "Install ready !!!";
             //startbtn.Content = "Start abas";
             Readwsl();
+            targetbtn.IsEnabled = true;
+            targetbtn.Content = "Choose Target Directory";
+            sourcebtn.Content = "Choose Tar Image";
+
+
+
+
 
         }
         async void OnClick_Uninstall(object sender, RoutedEventArgs e)
@@ -213,6 +215,8 @@ namespace abasWSL
             
             
             Readwsl();
+            targetbtn.IsEnabled = true;
+
 
         }
 
@@ -225,9 +229,9 @@ namespace abasWSL
         void OnClick_togglewsl(object sender, RoutedEventArgs e)
         {
             String output= callwsl("--list --verbose",0);
-            int i = output.IndexOf(imagecombo.SelectedValue.ToString());   
+            int i = output.IndexOf(" "+imagecombo.SelectedValue.ToString()+" ");   
             output = output.Substring(i, output.Length - i);
-            i = output.IndexOf("1");
+            i = output.IndexOf("2\r\n");
             output = output.Substring(0, i);
             if (output.Contains("Stopped"))
             {//Wsl aktuell gestoppt, kann gestartet werden 
@@ -239,9 +243,9 @@ namespace abasWSL
             }
             // Status abholen
            output = callwsl("--list --verbose", 0);
-            i = output.IndexOf(imagecombo.SelectedValue.ToString());
+            i = output.IndexOf(" "+imagecombo.SelectedValue.ToString()+" ");
             output = output.Substring(i, output.Length - i);
-            i = output.IndexOf("1");
+            i = output.IndexOf("2\r\n");
             output = output.Substring(0, i);
             if (output.Contains("Stopped"))
             {
@@ -283,6 +287,7 @@ namespace abasWSL
                 proc.WaitForExit(wait);
               string output = proc.StandardOutput.ReadToEnd();
               output = output.Replace("\x00", "");
+               
                 return output;
 
             }
@@ -316,7 +321,11 @@ namespace abasWSL
                 
                 string output = proc.StandardOutput.ReadToEnd();
                 output = output.Replace("\x00", "");
-                
+                Console.WriteLine(output);
+                if (output.Length > 0)
+                {
+                    MessageBox.Show(output, "Error", MessageBoxButton.OK);
+                }
 
             }
            // return Task.FromResult(0);
